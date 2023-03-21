@@ -1,0 +1,24 @@
+{
+  "field": {
+    "weather": {
+      "type": "Widget type"
+    }
+  },
+  "selection": {
+    "weather": "Weather widgets",
+    "OpenWeatherWidgetTemplate": "Open Weather widget"
+  },
+  "widget": {
+    "WeatherWidget": "Widget shows weather info"
+  },
+  "weather": {
+    "name": "Weather",
+    "setting": {
+      "label": "Weather settings",
+      "st_WeatherProviderSetting": "Weather provider",
+      "st_WeatherApiKeySetting": "Weather api key",
+      "st_WeatherLangSetting": "Weather lang",
+      "st_WeatherUnitSetting": "Weather unit"
+    }
+  }
+}
