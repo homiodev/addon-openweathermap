@@ -25,6 +25,11 @@ jobs:
         run: |
           git config user.email "release@github.com"
           git config user.name "GitHub Release Action"
+      - name: Import GPG Key
+        uses: crazy-max/ghaction-import-gpg@v1
+        env:
+          GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
+          PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
       - name: Release:prepare
         run: mvn -B release:prepare release:perform -Darguments="-Dmaven.javadoc.skip=true"
         env:
