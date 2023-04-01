@@ -1,4 +1,4 @@
-package org.touchhome.bundle.weather.providers;
+package org.homio.bundle.weather.providers;
 
 import java.util.HashMap;
 import java.util.List;
@@ -7,11 +7,11 @@ import lombok.Getter;
 import lombok.Setter;
 import org.apache.commons.text.StringSubstitutor;
 import org.springframework.stereotype.Component;
-import org.touchhome.bundle.api.EntityContext;
-import org.touchhome.bundle.hquery.hardware.network.NetworkHardwareRepository;
-import org.touchhome.bundle.weather.setting.WeatherApiKeySetting;
-import org.touchhome.bundle.weather.setting.WeatherLangSetting;
-import org.touchhome.bundle.weather.setting.WeatherUnitSetting;
+import org.homio.bundle.api.EntityContext;
+import org.homio.bundle.hquery.hardware.network.NetworkHardwareRepository;
+import org.homio.bundle.weather.setting.WeatherApiKeySetting;
+import org.homio.bundle.weather.setting.WeatherLangSetting;
+import org.homio.bundle.weather.setting.WeatherUnitSetting;
 
 @Component
 public class OpenWeatherMapProvider extends BaseWeatherProvider<OpenWeatherMapProvider.WeatherJSON> {

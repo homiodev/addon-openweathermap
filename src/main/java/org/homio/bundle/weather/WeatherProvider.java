@@ -1,4 +1,4 @@
-package org.touchhome.bundle.weather;
+package org.homio.bundle.weather;
 
 public interface WeatherProvider<T> {
 

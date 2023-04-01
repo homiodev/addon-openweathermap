@@ -1,8 +1,8 @@
-package org.touchhome.bundle.weather.setting;
+package org.homio.bundle.weather.setting;
 
-import org.touchhome.bundle.api.setting.SettingPluginOptionsBean;
-import org.touchhome.bundle.weather.WeatherProvider;
-import org.touchhome.bundle.weather.providers.OpenWeatherMapProvider;
+import org.homio.bundle.weather.providers.OpenWeatherMapProvider;
+import org.homio.bundle.api.setting.SettingPluginOptionsBean;
+import org.homio.bundle.weather.WeatherProvider;
 
 public class WeatherProviderSetting implements SettingPluginOptionsBean<WeatherProvider> {
 

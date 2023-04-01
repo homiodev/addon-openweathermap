@@ -1,18 +1,18 @@
-package org.touchhome.bundle.weather.widget;
+package org.homio.bundle.weather.widget;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
+import org.homio.bundle.weather.setting.WeatherApiKeySetting;
+import org.homio.bundle.weather.setting.WeatherUnitSetting;
 import org.springframework.stereotype.Component;
-import org.touchhome.bundle.api.EntityContext;
-import org.touchhome.bundle.api.ui.field.UIField;
-import org.touchhome.bundle.api.ui.field.UIFieldNumber;
-import org.touchhome.bundle.api.ui.field.UIFieldType;
-import org.touchhome.bundle.api.widget.JavaScriptBuilder;
-import org.touchhome.bundle.api.widget.WidgetJSBaseTemplate;
-import org.touchhome.bundle.hquery.hardware.network.NetworkHardwareRepository;
-import org.touchhome.bundle.weather.setting.WeatherApiKeySetting;
-import org.touchhome.bundle.weather.setting.WeatherUnitSetting;
+import org.homio.bundle.api.EntityContext;
+import org.homio.bundle.api.ui.field.UIField;
+import org.homio.bundle.api.ui.field.UIFieldNumber;
+import org.homio.bundle.api.ui.field.UIFieldType;
+import org.homio.bundle.api.widget.JavaScriptBuilder;
+import org.homio.bundle.api.widget.WidgetJSBaseTemplate;
+import org.homio.bundle.hquery.hardware.network.NetworkHardwareRepository;
 
 @Getter
 @Component

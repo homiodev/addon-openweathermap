@@ -1,18 +1,18 @@
-package org.touchhome.bundle.weather.workspace;
+package org.homio.bundle.weather.workspace;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;
 import org.springframework.stereotype.Component;
-import org.touchhome.bundle.api.EntityContext;
-import org.touchhome.bundle.api.state.DecimalType;
-import org.touchhome.bundle.api.state.ObjectType;
-import org.touchhome.bundle.api.state.State;
-import org.touchhome.bundle.api.workspace.WorkspaceBlock;
-import org.touchhome.bundle.api.workspace.scratch.ArgumentType;
-import org.touchhome.bundle.api.workspace.scratch.Scratch3Block;
-import org.touchhome.bundle.api.workspace.scratch.Scratch3ExtensionBlocks;
-import org.touchhome.bundle.weather.WeatherBundleEntrypoint;
-import org.touchhome.bundle.weather.setting.WeatherProviderSetting;
+import org.homio.bundle.api.EntityContext;
+import org.homio.bundle.api.state.DecimalType;
+import org.homio.bundle.api.state.ObjectType;
+import org.homio.bundle.api.state.State;
+import org.homio.bundle.api.workspace.WorkspaceBlock;
+import org.homio.bundle.api.workspace.scratch.ArgumentType;
+import org.homio.bundle.api.workspace.scratch.Scratch3Block;
+import org.homio.bundle.api.workspace.scratch.Scratch3ExtensionBlocks;
+import org.homio.bundle.weather.WeatherBundleEntrypoint;
+import org.homio.bundle.weather.setting.WeatherProviderSetting;
 
 @Getter
 @Component

@@ -1,11 +1,11 @@
-package org.touchhome.bundle.weather.providers;
+package org.homio.bundle.weather.providers;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.text.StringSubstitutor;
-import org.touchhome.bundle.api.model.HasDescription;
-import org.touchhome.bundle.api.util.Curl;
-import org.touchhome.bundle.hquery.hardware.network.NetworkHardwareRepository;
-import org.touchhome.bundle.weather.WeatherProvider;
+import org.homio.bundle.api.model.HasDescription;
+import org.homio.bundle.api.util.Curl;
+import org.homio.bundle.hquery.hardware.network.NetworkHardwareRepository;
+import org.homio.bundle.weather.WeatherProvider;
 
 @RequiredArgsConstructor
 public abstract class BaseWeatherProvider<T> implements WeatherProvider<T>, HasDescription {
