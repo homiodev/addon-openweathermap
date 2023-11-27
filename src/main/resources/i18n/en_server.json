@@ -1,0 +1,8 @@
+{
+  "ERROR": {
+    "NO_API_TOKEN": "No api token provided"
+  },
+  "OPENWEATHERMAP": {
+    "DESCRIPTION": "<ul><li>Login to: <a target='_blank' href='https://home.openweathermap.org/users/sign_in'>openweathermap</a></li><li><a target='_blank' href='https://home.openweathermap.org/api_keys'>Generate api token</a> and copy to api token field</li></ul>"
+  }
+}

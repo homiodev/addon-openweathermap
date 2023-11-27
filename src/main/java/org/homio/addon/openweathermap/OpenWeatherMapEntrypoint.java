@@ -1,22 +1,19 @@
-package org.homio.bundle.weather;
+package org.homio.addon.openweathermap;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.homio.api.AddonEntrypoint;
 import org.springframework.stereotype.Component;
-import org.homio.bundle.api.BundleEntrypoint;
 
 @Log4j2
 @Component
 @RequiredArgsConstructor
-public class WeatherBundleEntrypoint implements BundleEntrypoint {
+public class OpenWeatherMapEntrypoint implements AddonEntrypoint {
 
   @Override
   public void init() {
 
   }
 
-  @Override
-  public int order() {
-    return 6000;
-  }
+
 }
