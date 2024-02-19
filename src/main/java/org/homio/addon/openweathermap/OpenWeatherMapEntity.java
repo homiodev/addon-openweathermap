@@ -12,9 +12,9 @@ import org.homio.api.util.SecureString;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-@SuppressWarnings({"JpaAttributeTypeInspection", "JpaAttributeMemberSignatureInspection"})
+@SuppressWarnings({"JpaAttributeTypeInspection", "JpaAttributeMemberSignatureInspection", "unused"})
 @Entity
-@UISidebarChildren(icon = "fas fa-cloud-bolt", color = "#84B380")
+@UISidebarChildren(icon = "fas fa-cloud-bolt", color = "#84B380", maxAllowCreateItem = 1)
 public class OpenWeatherMapEntity extends WeatherEntity<OpenWeatherMapService> {
 
   @Override

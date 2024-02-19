@@ -1,22 +1,32 @@
 package org.homio.addon.openweathermap;
 
-import com.fasterxml.jackson.databind.JsonNode;
+import com.google.common.cache.CacheBuilder;
+import com.google.common.cache.CacheLoader;
+import com.google.common.cache.LoadingCache;
+import java.time.Duration;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.TimeUnit;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.SneakyThrows;
 import org.apache.commons.text.StringSubstitutor;
 import org.homio.addon.openweathermap.OpenWeatherMapService.WeatherJSON.WeatherStat;
 import org.homio.api.Context;
-import org.homio.api.exception.ServerException;
+import org.homio.api.ContextBGP;
+import org.homio.api.ContextBGP.ThreadContext;
+import org.homio.api.ContextNetwork.CityGeolocation;
+import org.homio.api.ContextVar.Variable;
 import org.homio.api.model.OptionModel.HasDescription;
+import org.homio.api.model.Status;
 import org.homio.api.service.EntityService.ServiceInstance;
 import org.homio.api.service.WeatherEntity.WeatherInfo;
 import org.homio.api.service.WeatherEntity.WeatherInfo.HourWeatherInfo;
+import org.homio.api.service.WeatherEntity.WeatherInfoType;
 import org.homio.api.service.WeatherEntity.WeatherService;
 import org.homio.hquery.Curl;
-import org.homio.hquery.hardware.network.NetworkHardwareRepository;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -28,13 +38,81 @@ public class OpenWeatherMapService extends ServiceInstance<OpenWeatherMapEntity>
       + "}&units=${unit}&lang=${lang}";
 
   private final Class<WeatherJSON> weatherJSONType = WeatherJSON.class;
-  private final NetworkHardwareRepository networkHardwareRepository;
-  private WeatherJSON data;
-  private long lastRequestTimeout;
+
+  private final Map<String, Variable> owmVariables = new ConcurrentHashMap<>();
+  private final LoadingCache<String, WeatherJSON> dataCache;
+  private ThreadContext<Void> weatherListeners;
 
   public OpenWeatherMapService(Context context, OpenWeatherMapEntity entity) {
     super(context, entity, true);
-    this.networkHardwareRepository = context.getBean(NetworkHardwareRepository.class);
+
+    this.dataCache = CacheBuilder
+        .newBuilder()
+        .expireAfterWrite(1, TimeUnit.MINUTES)
+        .build(new CacheLoader<>() {
+          @Override
+          public @NotNull WeatherJSON load(@NotNull String city) {
+            CityGeolocation cityInfo = context.hardware().network().getCityGeolocation(city);
+            return Curl.get(buildWeatherRequest(
+                cityInfo.getLat(),
+                cityInfo.getLon(), null)
+                .replace(ONECALL_URL), weatherJSONType);
+          }
+        });
+
+    context.var().onVariableCreated("owm-listener", this::addVariableToListen);
+    context.var().onVariableRemoved("owm-listener", (var) -> {
+      if (owmVariables.remove(var.getId()) != null && owmVariables.isEmpty()) {
+        ContextBGP.cancel(weatherListeners);
+        weatherListeners = null;
+      }
+    });
+    for (Variable var : context.var().getVariables()) {
+      addVariableToListen(var);
+    }
+  }
+
+  @Override
+  public String isRequireRestartService() {
+    if (entity.getStatus() == Status.ERROR) {
+      return "Error status of: " + entity.getTitle();
+    }
+    return null;
+  }
+
+  protected StringSubstitutor buildWeatherRequest(double latt, double longt, @Nullable Long timestamp) {
+    Map<String, String> valuesMap = new HashMap<>();
+
+    valuesMap.put("lat", String.valueOf(latt));
+    valuesMap.put("lon", String.valueOf(longt));
+    if (timestamp != null) {
+      valuesMap.put("time", String.valueOf(timestamp));
+    }
+    valuesMap.put("unit", entity.getUnit().name());
+    valuesMap.put("key", entity.getApiToken().asString());
+    valuesMap.put("lang", entity.getLang().name());
+    return new StringSubstitutor(valuesMap);
+  }
+
+  private void addVariableToListen(Variable var) {
+    if (entity.getEntityID().equals(var.getJsonData().optString("weatherProvider"))) {
+      owmVariables.put(var.getId(), var);
+      if (weatherListeners == null) {
+        weatherListeners = context
+            .bgp()
+            .builder("owm-weather")
+            .interval(Duration.ofMinutes(1))
+            .execute(() -> {
+              for (Variable variable : owmVariables.values()) {
+                try {
+                  var.set(readWeather(variable));
+                } catch (Exception ex) {
+                  log.warn("Unable to read weather info for city: {}", var.getJsonData().optString("city"), ex);
+                }
+              }
+            });
+      }
+    }
   }
 
   @Override
@@ -64,18 +142,19 @@ public class OpenWeatherMapService extends ServiceInstance<OpenWeatherMapEntity>
 
   }
 
-  protected StringSubstitutor buildWeatherRequest(String latt, String longt, Long timestamp) {
-    Map<String, String> valuesMap = new HashMap<>();
-
-    valuesMap.put("lat", latt);
-    valuesMap.put("lon", longt);
-    if (timestamp != null) {
-      valuesMap.put("time", String.valueOf(timestamp));
-    }
-    valuesMap.put("unit", entity.getUnit().name());
-    valuesMap.put("key", entity.getApiToken().asString());
-    valuesMap.put("lang", entity.getLang().name());
-    return new StringSubstitutor(valuesMap);
+  @SneakyThrows
+  private Double readWeather(Variable variable) {
+    WeatherJSON data = dataCache.get(variable.getJsonData().getString("city"));
+    return switch (WeatherInfoType.valueOf(variable.getJsonData().getString("type"))) {
+      case Temperature -> data.getCurrent().getTemp();
+      case Pressure -> data.getCurrent().getPressure();
+      case Humidity -> data.getCurrent().getHumidity();
+      case WindSpeed -> data.getCurrent().getWind_speed();
+      case WindDegree -> data.getCurrent().getWind_deg();
+      case FeelsLike -> data.getCurrent().getFeels_like();
+      case Visibility -> data.getCurrent().getVisibility();
+      case Clouds -> data.getCurrent().getClouds();
+    };
   }
 
   @Override
@@ -108,21 +187,14 @@ public class OpenWeatherMapService extends ServiceInstance<OpenWeatherMapEntity>
   /**
    * Read from weather provider not ofter than one minute
    */
-  private synchronized WeatherJSON readJson(String city, Long timestamp) {
-    if (data == null || System.currentTimeMillis() - lastRequestTimeout > 10000) {
-      JsonNode cityGeolocation = networkHardwareRepository.getCityGeolocation(city);
-      if (cityGeolocation.has("error")) {
-        throw new ServerException(cityGeolocation.get("error").get("description").asText());
-      }
-      data = Curl.get(buildWeatherRequest(
-              cityGeolocation.get("latt").asText(),
-              cityGeolocation.get("longt").asText(),
-              timestamp)
-              .replace(timestamp == null ? ONECALL_URL : TIMEMACHINE_URL),
-          weatherJSONType);
-      lastRequestTimeout = System.currentTimeMillis();
+  @SneakyThrows
+  private synchronized WeatherJSON readJson(@NotNull String city, @Nullable Long timestamp) {
+    if (timestamp == null) {
+      return dataCache.get(city);
     }
-    return data;
+    CityGeolocation cityInfo = context.hardware().network().getCityGeolocation(city);
+    return Curl.get(buildWeatherRequest(cityInfo.getLat(), cityInfo.getLon(),
+        timestamp).replace(TIMEMACHINE_URL), weatherJSONType);
   }
 
   @Getter

@@ -61,8 +61,8 @@ public class OpenWeatherWidgetTemplate {
     String containerId = "cow-" + System.currentTimeMillis();
     javaScriptBuilder
         .jsonParam("id", "15")
-        .jsonParam("city_name", networkHardwareRepository.getIpGeoLocation(
-            networkHardwareRepository.getOuterIpAddress()).get("city").asText());
+        .jsonParam("city_name", context.hardware().network().getIpGeoLocation(
+            networkHardwareRepository.getOuterIpAddress()).getCity());
 
     BaseEntity baseEntity;
     if (StringUtils.isNotEmpty(weatherEntity)) {
