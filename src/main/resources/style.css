@@ -1,0 +1,135 @@
+@container (max-width: 200px) {
+    b {
+        font-size: 7px !important;
+    }
+
+    .weather-widget {
+        font-size: 12px !important;
+    }
+
+    .footer {
+        display: flex !important;
+    }
+
+    .temperature {
+        display: none !important;
+    }
+
+    .weather-widget .current-weather .temperature .details {
+        display: none !important;
+    }
+
+    .weather-widget .forecast .day .icon {
+        width: 28px;
+        height: 28px;
+    }
+}
+
+@container (max-height: 150px) {
+    .weather-widget .forecast .day .max {
+        margin-top: -5px;
+    }
+}
+
+@container (max-height: 300px) {
+    .weather-widget {
+        line-height: 14px;
+    }
+
+    .weather-widget .current-weather .temperature {
+        font-size: 36px !important;
+    }
+
+    .weather-widget h2 {
+        display: none;
+    }
+
+    .weather-widget .current-weather .temperature,
+    .weather-widget .forecast,
+    .weather-widget .current-weather {
+        margin: 0 !important;
+    }
+}
+
+b {
+    font-size: 10px;
+}
+
+.footer {
+    display: none;
+    justify-content: space-between;
+}
+
+.footer div {
+    display: flex;
+}
+
+.weather-widget {
+    font-size: 14px;
+    text-align: center;
+    height: 100%;
+}
+
+.weather-widget h2 {
+    margin: 0 0 10px;
+    font-size: 24px;
+    font-weight: bold;
+}
+
+.weather-widget .current-weather {
+    margin-bottom: 20px;
+}
+
+.weather-widget .current-weather .temperature {
+    font-size: 48px;
+    font-weight: bold;
+    margin: 10px 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.weather-widget .current-weather .temperature .details {
+    margin-left: 20px;
+    font-size: 12px;
+    display: flex;
+    flex-direction: row;
+}
+
+.weather-widget .current-weather .temperature .details .block {
+    margin-left: 15px;
+}
+
+.weather-widget .current-weather .temperature .details .block .info {
+    display: flex;
+    align-items: center;
+    margin: 5px 0;
+}
+
+.weather-widget .current-weather .temperature .details .block .info i {
+    margin-right: 5px;
+    color: #6cb339;
+}
+
+.weather-widget .forecast {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 20px;
+}
+
+.weather-widget .forecast .day {
+    text-align: center;
+    flex: 1;
+}
+
+.weather-widget .forecast .day .name {
+    height: 6px;
+}
+
+.weather-widget .forecast .day .min {
+    color: #3872ba;
+}
+
+.weather-widget .forecast .day .max {
+    color: #cc3f3f;
+}

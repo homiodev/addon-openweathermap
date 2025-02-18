@@ -1,12 +1,14 @@
 {
-  "TABS": {
-    "OpenWeatherWidgetTemplate": "OpenWeatherMap"
-  },
   "field": {
     "weatherType": "Widget type"
   },
   "SELECTION": {
     "OpenWeatherWidgetTemplate": "Open Weather widget",
-    "OpenWeatherMapEntity": "OpenWeather"
+    "OpenWeatherEntity": "Open Weather"
+  },
+  "CONTEXT": {
+    "ACTION": {
+      "CREATE_WEATHER_WIDGET": "Create weather widget"
+    }
   }
 }

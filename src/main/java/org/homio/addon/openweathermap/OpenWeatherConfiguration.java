@@ -5,6 +5,4 @@ import org.springframework.context.annotation.Configuration;
 
 @Configuration
 @AddonConfiguration
-public class OpenWeatherMapConfiguration {
-
-}
+public class OpenWeatherConfiguration {}
