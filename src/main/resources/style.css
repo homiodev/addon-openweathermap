@@ -1,10 +1,13 @@
 @container (max-width: 200px) {
+    .back-btn {
+        padding: 2px 4px !important;
+    }
     b {
         font-size: 7px !important;
     }
 
     .weather-widget {
-        font-size: 12px !important;
+        font-size: 11px !important;
     }
 
     .footer {
@@ -15,18 +18,19 @@
         display: none !important;
     }
 
-    .weather-widget .current-weather .temperature .details {
+    .details {
         display: none !important;
     }
 
-    .weather-widget .forecast .day .icon {
-        width: 28px;
-        height: 28px;
+    .forecast .day .icon {
+        width: 24px;
+        height: 24px;
     }
 }
 
 @container (max-height: 150px) {
-    .weather-widget .forecast .day .max {
+    .forecast .day .max,
+    .forecast .day .min {
         margin-top: -5px;
     }
 }
@@ -45,7 +49,7 @@
     }
 
     .weather-widget .current-weather .temperature,
-    .weather-widget .forecast,
+    .forecast,
     .weather-widget .current-weather {
         margin: 0 !important;
     }
@@ -58,6 +62,7 @@ b {
 .footer {
     display: none;
     justify-content: space-between;
+    margin: 0 1px;
 }
 
 .footer div {
@@ -89,47 +94,67 @@ b {
     justify-content: center;
 }
 
-.weather-widget .current-weather .temperature .details {
+.details {
     margin-left: 20px;
     font-size: 12px;
     display: flex;
     flex-direction: row;
 }
 
-.weather-widget .current-weather .temperature .details .block {
+.details .block {
     margin-left: 15px;
 }
 
-.weather-widget .current-weather .temperature .details .block .info {
+.details .block .info {
     display: flex;
     align-items: center;
     margin: 5px 0;
 }
 
-.weather-widget .current-weather .temperature .details .block .info i {
+.details .block .info i {
     margin-right: 5px;
     color: #6cb339;
 }
 
-.weather-widget .forecast {
+.forecast {
     display: flex;
     justify-content: space-between;
     margin-top: 20px;
 }
 
-.weather-widget .forecast .day {
+.forecast .day {
     text-align: center;
     flex: 1;
+    transition: background 0.2s;
 }
 
-.weather-widget .forecast .day .name {
+.clickable {
+    cursor: pointer;
+}
+
+.clickable .day:hover {
+    background: rgba(0,0,0,0.1);
+}
+
+.forecast .day .name {
     height: 6px;
 }
 
-.weather-widget .forecast .day .min {
+.forecast .day .min {
     color: #3872ba;
 }
 
-.weather-widget .forecast .day .max {
+.forecast .day .max {
     color: #cc3f3f;
+}
+
+.back-btn {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    background: #2196F340;
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 4px;
+    cursor: pointer;
 }

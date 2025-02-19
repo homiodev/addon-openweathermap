@@ -2,6 +2,7 @@
   "field": {
     "weatherType": "Widget type"
   },
+  "OpenWeatherEntity": "Open Weather",
   "SELECTION": {
     "OpenWeatherWidgetTemplate": "Open Weather widget",
     "OpenWeatherEntity": "Open Weather"

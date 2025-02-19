@@ -1,6 +1,8 @@
 package org.homio.addon.openweathermap;
 
+import static org.apache.commons.lang3.StringUtils.defaultIfEmpty;
 import static org.homio.api.ui.field.action.v1.item.UITextInputItemBuilder.InputType.Text;
+import static org.homio.api.util.HardwareUtils.MACHINE_IP_ADDRESS;
 
 import jakarta.persistence.Entity;
 import java.util.List;
@@ -183,7 +185,7 @@ public class OpenWeatherEntity extends WeatherEntity<OpenWeatherService>
                     .setIcon(
                         new Icon(
                             params.getString("icon"),
-                            StringUtils.defaultIfEmpty(params.optString("color"), "#999999")))
+                            defaultIfEmpty(params.optString("color"), "#999999")))
                     .setNumberRange(-50, 50));
   }
 
@@ -209,8 +211,15 @@ public class OpenWeatherEntity extends WeatherEntity<OpenWeatherService>
   }
 
   @Override
-  public @NotNull BaseEntity createWidget(@NotNull Context context, @NotNull String name, @NotNull String tabId, int width, int height) {
-    return createWeatherWidget(context(), tabId, name);
+  public @NotNull BaseEntity createWidget(
+      @NotNull Context context,
+      @NotNull String name,
+      @NotNull String tabId,
+      int width,
+      int height) {
+    String ipAddress = context.network().getOuterIpAddress();
+    var location = context.network().getIpGeoLocation(ipAddress);
+    return createWeatherWidget(context(), tabId, defaultIfEmpty(location.getCity(), "London"));
   }
 
   @Override
@@ -220,16 +229,16 @@ public class OpenWeatherEntity extends WeatherEntity<OpenWeatherService>
 
   private @NotNull BaseEntity createWeatherWidget(Context context, String tab, String city) {
     return context
-      .widget()
-      .createCustomWidget(
-        getEntityID(),
-        tab,
-        builder ->
-          builder
-            .setValue("city", city)
-            .code(CommonUtils.readFile("code.js"))
-            .css(CommonUtils.readFile("style.css"))
-            .parameterEntity(getEntityID()));
+        .widget()
+        .createCustomWidget(
+            getEntityID(),
+            tab,
+            builder ->
+                builder
+                    .setValue("city", city)
+                    .code(CommonUtils.readFile("code.js"))
+                    .css(CommonUtils.readFile("style.css"))
+                    .parameterEntity(getEntityID()));
   }
 
   public enum WeatherUnit {

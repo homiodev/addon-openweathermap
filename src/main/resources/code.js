@@ -1,73 +1,93 @@
 class OpenWeatherWidget extends HTMLElement {
-    constructor() {
-        super();
-        this.attachShadow({mode: "open"});
-    }
 
     setContext(widget) {
-        widget.dataWarehouse.subscribe(info => {
-            this.info = info;
-            this.render();
+        widget.dataWarehouse.subscribe(data => {
+            if(data) {
+                this.weather = data;
+                this.render();
+            }
         });
     }
 
     render() {
-        if (!this.info) return;
-        this.content = this.shadowRoot.querySelector(".custom-widget-panel");
-
-        const weather = this.info;
-
-        // Helper function to format time (convert Unix timestamp to HH:MM)
         const formatTime = (timestamp) => {
             const date = new Date(timestamp * 1000);
-            return date.toLocaleTimeString([], {hour: '2-digit', minute: '2-digit'});
+            return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false });
         };
+        const formatDate = (timestamp) => {
+            const date = new Date(timestamp * 1000);
+            return date.toLocaleTimeString([], { hour: '2-digit', hour12: false });
+        };
+
+        if(this.selectedDayIdx != null) {
+            const day = this.weather.forecast[this.selectedDayIdx];
+            const hoursArray = Object.values(day.hours).sort((a, b) => a.dt - b.dt);
+            this.content.innerHTML = `                    
+                <div class="weather-widget forecast hours">
+                <button class="back-btn">← Back(${day.name})</button> 
+                ${hoursArray.map(hour => ` 
+                    <div class="day">
+                    <div class="name">${formatDate(hour.dt / 1000)}</div>
+                    <img class="icon" src="https://openweathermap.org/img/wn/${hour.icon}.png" />
+                    <div class="min">${Math.round(hour.temperature)}°<b>C</b></div>
+                    </div>
+                `).join('')}
+                </div>
+            `;
+            setTimeout(()=> {
+                this.content.querySelector('.back-btn').addEventListener('click', () => {
+                    this.selectedDayIdx = null;
+                    this.render();
+                });
+            }, 100);
+            return;
+        }
 
         this.content.innerHTML = `
             <div class="weather-widget">
-              <h2 class="city-name">${weather.city} - ${weather.condition}</h2>
+              <h2 class="city-name">${this.weather.city} - ${this.weather.condition}</h2>
               <div class="current-weather">
                 <div class="temperature">
                   <div class="main">
-                    <img class="icon" src="https://openweathermap.org/img/wn/${weather.icon}.png" />
-                    ${Math.round(weather.temperature)}°C
+                    <img class="icon" src="https://openweathermap.org/img/wn/${this.weather.icon}.png" />
+                    ${Math.round(this.weather.temperature)}°C
                   </div>
                   <div class="details">
                     <div class="block">
                     <div class="info">
                       <i class="fas fa-tachometer-alt"></i>
-                      <div class="value">${weather.pressure} hPa</div>
+                      <div class="value">${this.weather.pressure} hPa</div>
                     </div>
                     <div class="info">
                       <i class="fas fa-tint"></i>
-                      <div class="value">${weather.humidity}%</div>
+                      <div class="value">${this.weather.humidity}%</div>
                     </div>
                     </div>
                     <div class="block">
                     <div class="info">
                       <i class="fas fa-wind"></i>
-                      <div class="value">${weather.windSpeed} m/s</div>
+                      <div class="value">${this.weather.windSpeed} m/s</div>
                     </div>
                     <div class="info">
                       <i class="fas fa-eye"></i>
-                      <div class="value">${weather.visibility / 1000} km</div>
+                      <div class="value">${this.weather.visibility / 1000} km</div>
                     </div>
                     </div>
                     <div class="block">
                     <div class="info">
                       <i class="fas fa-sun"></i>
-                      <div class="value">${formatTime(weather.sunrise)}</div>
+                      <div class="value">${formatTime(this.weather.sunrise)}</div>
                     </div>
                     <div class="info">
                       <i class="fas fa-moon"></i>
-                      <div class="value">${formatTime(weather.sunset)}</div>
+                      <div class="value">${formatTime(this.weather.sunset)}</div>
                     </div>
                     </div>
                   </div>
                 </div>
               </div>
-              <div class="forecast">
-                ${weather.forecast.map(day => `
+              <div class="forecast clickable">
+                ${this.weather.forecast.map(day => `
                   <div class="day">
                     <div class="name">${day.name}</div>
                     <img class="icon" src="https://openweathermap.org/img/wn/${day.icon}.png" />
@@ -79,19 +99,28 @@ class OpenWeatherWidget extends HTMLElement {
               <div class="footer"> 
                 <div>
                   <i class="fas fa-fw fa-temperature-high"></i>
-                  <span>${Math.round(weather.temperature)}<b>°C</b></span>
+                  <span>${Math.round(this.weather.temperature)}<b>°C</b></span>
                 </div>                          
                 <div>
                   <i class="fas fa-fw fa-tint"></i>
-                  <span>${weather.humidity}<b>%</b></span>
+                  <span>${this.weather.humidity}<b>%</b></span>
                 </div>                                                
                   <div>
                     <i class="fas fa-fw fa-wind"></i>
-                    <span>${weather.windSpeed}<b>m/s</b></span>
+                    <span>${this.weather.windSpeed}<b>m/s</b></span>
                   </div>
               </div>
             </div>
         `;
+
+        setTimeout(()=> {
+            this.content.querySelectorAll('.forecast .day').forEach((dayElem, idx) => {
+                dayElem.addEventListener('click', () => {
+                    this.selectedDayIdx = idx;
+                    this.render();
+                });
+            });
+        }, 100)
     }
 }
 
