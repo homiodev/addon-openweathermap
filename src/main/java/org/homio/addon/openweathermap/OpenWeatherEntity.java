@@ -1,14 +1,6 @@
 package org.homio.addon.openweathermap;
 
-import static org.apache.commons.lang3.StringUtils.defaultIfEmpty;
-import static org.homio.api.ui.field.action.v1.item.UITextInputItemBuilder.InputType.Text;
-import static org.homio.api.util.HardwareUtils.MACHINE_IP_ADDRESS;
-
 import jakarta.persistence.Entity;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import org.apache.commons.lang3.StringUtils;
 import org.homio.api.Context;
 import org.homio.api.ContextVar;
 import org.homio.api.entity.BaseEntity;
@@ -37,6 +29,12 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.json.JSONObject;
 
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import static org.apache.commons.lang3.StringUtils.defaultIfEmpty;
+
 @SuppressWarnings({"JpaAttributeTypeInspection", "JpaAttributeMemberSignatureInspection", "unused"})
 @Entity
 @UISidebarChildren(icon = "fas fa-cloud-bolt", color = "#84B380", maxAllowCreateItem = 1)
@@ -49,7 +47,7 @@ public class OpenWeatherEntity extends WeatherEntity<OpenWeatherService>
     dialogBuilder.addFlex(
         "main",
         flex -> {
-          flex.addInput("name", "OpenWeather " + WeatherInfoType.Temperature.name(), Text, true);
+          flex.addTextInput("name", "OpenWeather " + WeatherInfoType.Temperature.name(), true);
           flex.addIconPicker("icon", "fas fa-cloud");
           flex.addColorPicker("color", "#999999");
           flex.addSelectBox("type")
@@ -157,7 +155,7 @@ public class OpenWeatherEntity extends WeatherEntity<OpenWeatherService>
                 builder.addFlex(
                     "main",
                     flex -> {
-                      flex.addInput("city", "London", Text, true);
+                      flex.addTextInput("city", "London", true);
                       flex.addSelectBoxWidgetTab(context());
                     }));
   }
